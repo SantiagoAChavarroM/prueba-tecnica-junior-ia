@@ -143,8 +143,10 @@ def save_file_and_records(engine: Engine, file_row: dict[str, Any], rows: list[d
     inserted = 0
     with engine.begin() as conn:
         for row in rows:
-            result = conn.execute(_insert_ignore(engine, records), [{**row, "created_at": now()}])
-            inserted += result.rowcount or 0
+            # RETURNING devuelve una fila solo si se insertó; si era duplicado, no devuelve nada.
+            # (rowcount no es confiable: con psycopg/pooler de Supabase vale -1.)
+            stmt = _insert_ignore(engine, records).returning(records.c.id)
+            inserted += len(conn.execute(stmt, {**row, "created_at": now()}).fetchall())
         duplicates = len(rows) - inserted
         file_row = {**file_row, "n_inserted": inserted, "n_duplicates": duplicates, "processed_at": now()}
         conn.execute(_insert_ignore(engine, processed_files), [file_row])

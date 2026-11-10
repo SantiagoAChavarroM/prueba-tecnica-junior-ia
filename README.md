@@ -153,7 +153,7 @@ docker run --env-file .env prueba-tecnica python -m src.pipeline --source gmail 
 ### Base de datos (Supabase)
 
 1. Crea un proyecto gratis en [supabase.com](https://supabase.com).
-2. Ve a **Connect → Session pooler** y copia la cadena `postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres`.
+2. Ve a **Connect → Session pooler** y copia la cadena `postgresql://postgres.<ref>:<password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres`.
    Usa el *pooler* porque la conexión directa es solo IPv6 y GitHub Actions no tiene IPv6.
 3. Ponla en `DATABASE_URL`. Las tablas se crean solas en la primera ejecución.
 
