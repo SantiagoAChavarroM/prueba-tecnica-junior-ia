@@ -167,10 +167,10 @@ docker run --env-file .env prueba-tecnica python -m src.pipeline --source gmail 
 
 | Paso del enunciado | Implementación |
 |---|---|
-| Nuevo correo | `pipeline.yml` corre cada 15 min; `list_candidate_ids` busca `from:<remitente> has:attachment` |
+| Nuevo correo | `pipeline.yml` corre cada 15 min; `list_candidate_ids` busca `from:<remitente> subject:"Reporte operacional" has:attachment newer_than:30d` (asunto y ventana configurables) |
 | Validar remitente | `sender_is_authorized`: compara la dirección **exacta** del encabezado `From` (no basta con que el texto la contenga) |
 | Detectar adjuntos | Recorre todas las partes MIME; solo acepta `.pdf` y `.xlsx` |
-| Descargar documentos | `attachments().get` de Gmail; copia en `data/downloads` (y se guarda como *artifact* de Actions por 7 días) |
+| Descargar documentos | `attachments().get` de Gmail; copia local en `data/downloads` (no se publica como *artifact*: el repo es público) |
 | Procesar PDF / Excel | `excel_parser`, `pdf_parser`; IA como respaldo para PDF fuera de formato |
 | Validar información | `validation.py`: obligatorios, valor > 0, fechas, catálogo de estados, referencias repetidas |
 | Consolidar datos | `db.save_file_and_records`: una transacción e `INSERT … ON CONFLICT DO NOTHING` |
@@ -237,8 +237,9 @@ ejecuciones; y descarga en CSV.
   si el *Número de referencia* es una clave única.
 - **Remitente:** se valida la dirección del encabezado `From`. Para blindarlo contra suplantación se podrían
   validar también SPF/DKIM (`Authentication-Results`).
-- El historial de adjuntos descargados se conserva 7 días como *artifact* de GitHub; los datos extraídos quedan
-  permanentemente en la base.
+- **Identificación por asunto:** el remitente autorizado puede enviar otros correos con adjuntos; por eso, además del
+  remitente, se exige el asunto "Reporte operacional" y una ventana de 30 días. Así no se procesan ni se envían a la
+  IA documentos ajenos al reporte.
 
 ## 10. Seguridad
 

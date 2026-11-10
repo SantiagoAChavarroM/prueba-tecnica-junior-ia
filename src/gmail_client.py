@@ -88,7 +88,10 @@ def _walk_parts(payload: dict) -> Iterator[dict]:
 
 def list_candidate_ids(service, settings: Settings) -> list[str]:
     """Paso 'Nuevo correo': busca correos del remitente que tengan adjuntos."""
-    query = f"from:{settings.authorized_sender} has:attachment {settings.gmail_extra_query}".strip()
+    # Identificación del correo relevante: remitente + asunto esperado + adjuntos + recientes.
+    # Sin el filtro de asunto se procesarían TODOS los correos con adjuntos de ese remitente.
+    subject = f'subject:"{settings.gmail_subject_filter}"' if settings.gmail_subject_filter else ""
+    query = f"from:{settings.authorized_sender} {subject} has:attachment {settings.gmail_extra_query}".strip()
     ids: list[str] = []
     request = service.users().messages().list(userId="me", q=query, maxResults=100)
     while request is not None:

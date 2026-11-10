@@ -34,6 +34,7 @@ class Settings:
     gmail_client_secret: str
     gmail_refresh_token: str
     gmail_extra_query: str
+    gmail_subject_filter: str
     database_url: str
     gemini_api_key: str
     gemini_model: str
@@ -53,7 +54,8 @@ def get_settings() -> Settings:
         gmail_client_id=env("GMAIL_CLIENT_ID", ""),
         gmail_client_secret=env("GMAIL_CLIENT_SECRET", ""),
         gmail_refresh_token=env("GMAIL_REFRESH_TOKEN", ""),
-        gmail_extra_query=env("GMAIL_EXTRA_QUERY", ""),
+        gmail_extra_query=env("GMAIL_EXTRA_QUERY") or "newer_than:30d",
+        gmail_subject_filter=env("GMAIL_SUBJECT_FILTER") or "Reporte operacional",
         database_url=_normalize_db_url(env("DATABASE_URL", "sqlite:///data/local.db")),
         gemini_api_key=env("GEMINI_API_KEY", ""),
         gemini_model=env("GEMINI_MODEL", "gemini-3.6-flash"),

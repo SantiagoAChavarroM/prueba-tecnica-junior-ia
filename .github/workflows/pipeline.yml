@@ -30,18 +30,10 @@ jobs:
           GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
           GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
-          GMAIL_EXTRA_QUERY: ${{ vars.GMAIL_EXTRA_QUERY }}
+          GMAIL_EXTRA_QUERY: ${{ vars.GMAIL_EXTRA_QUERY || 'newer_than:30d' }}
+          GMAIL_SUBJECT_FILTER: ${{ vars.GMAIL_SUBJECT_FILTER || 'Reporte operacional' }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.6-flash' }}
           GEMINI_FALLBACK_MODELS: ${{ vars.GEMINI_FALLBACK_MODELS || 'gemini-3.5-flash-lite,gemini-3.5-flash' }}
         run: python -m src.pipeline --source gmail
-
-      - name: Guardar adjuntos descargados (historial, 7 días)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: adjuntos-${{ github.run_id }}
-          path: data/downloads/
-          if-no-files-found: ignore
-          retention-days: 7
