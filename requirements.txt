@@ -1,0 +1,25 @@
+# Procesamiento de datos
+pandas>=2.2,<3
+openpyxl>=3.1
+pdfplumber>=0.11
+
+# Persistencia (SQLite local / PostgreSQL en Supabase)
+SQLAlchemy>=2.0
+psycopg[binary]>=3.2
+
+# Gmail API (OAuth)
+google-api-python-client>=2.140
+google-auth>=2.34
+google-auth-oauthlib>=1.2
+
+# IA (Google Gemini)
+google-genai>=1.0
+
+# Dashboard
+streamlit>=1.45
+plotly>=5.24
+
+# Utilidades
+python-dotenv>=1.0
+reportlab>=4.2   # solo para generar los archivos de ejemplo
+pytest>=8.3
