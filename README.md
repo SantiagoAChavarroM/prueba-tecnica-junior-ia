@@ -139,8 +139,7 @@ docker run --env-file .env prueba-tecnica python -m src.pipeline --source gmail 
 1. Entra a [Google Cloud Console](https://console.cloud.google.com/) y crea un proyecto.
 2. Ve a **APIs y servicios → Biblioteca** y habilita **Gmail API**.
 3. Configura la **pantalla de consentimiento OAuth**: tipo *Externo*; en *Usuarios de prueba* agrega la cuenta
-   de Gmail que recibe los reportes. Luego **publica la app (En producción)** para que el token no venza
-   cada 7 días (ver Limitaciones).
+   de Gmail que recibe los reportes. La app queda en modo **Prueba** (ver Limitaciones).
 4. En **Credenciales**, crea un **ID de cliente OAuth** de tipo **App de escritorio** y descarga el JSON
    como `credentials.json` en la raíz del proyecto (está en `.gitignore`).
 5. Ejecuta `python scripts/gmail_auth.py`, inicia sesión y acepta el permiso de **solo lectura**.
@@ -217,10 +216,11 @@ ejecuciones; y descarga en CSV.
 
 ## 9. Limitaciones conocidas
 
-- **Token de Gmail:** si la app OAuth queda en modo *Testing*, Google vence el refresh token a los **7 días**.
-  Hay que publicarla (*En producción*). Como `gmail.readonly` es un permiso restringido, Google muestra la
-  advertencia "app no verificada", pero el uso personal funciona sin pasar la verificación.
-  Si el token vence, el job falla en rojo y hay que repetir `scripts/gmail_auth.py`.
+- **Token de Gmail:** la app OAuth está en modo *Prueba*, así que Google vence el refresh token a los **7 días**.
+  Pasarla a *Producción* exige publicar una página principal y una política de privacidad, algo fuera del alcance
+  de la prueba. Cuando el token vence, el job de Actions falla en rojo (GitHub envía un correo de aviso); se
+  renueva en 1 minuto con `python scripts/gmail_auth.py` y actualizando el secret `GMAIL_REFRESH_TOKEN`.
+  El dashboard sigue funcionando con los datos ya cargados.
 - **GitHub Actions cron:** no es tiempo real. GitHub puede retrasar la ejecución algunos minutos, y en repos
   públicos **desactiva los cron tras 60 días sin actividad** (se reactiva con un clic o con un commit).
 - **Streamlit Community Cloud:** la app se "duerme" tras unos días sin visitas; la primera carga tarda ~30 s en despertar.
